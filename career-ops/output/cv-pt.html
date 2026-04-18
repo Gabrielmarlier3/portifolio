@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gabriel Souza — CV</title>
+<style>
+  @font-face {
+    font-family: 'Space Grotesk';
+    src: url('./fonts/space-grotesk-latin.woff2') format('woff2');
+    font-weight: 300 700; font-style: normal; font-display: swap;
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+  @font-face {
+    font-family: 'Space Grotesk';
+    src: url('./fonts/space-grotesk-latin-ext.woff2') format('woff2');
+    font-weight: 300 700; font-style: normal; font-display: swap;
+    unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  }
+  @font-face {
+    font-family: 'DM Sans';
+    src: url('./fonts/dm-sans-latin.woff2') format('woff2');
+    font-weight: 100 1000; font-style: normal; font-display: swap;
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+  @font-face {
+    font-family: 'DM Sans';
+    src: url('./fonts/dm-sans-latin-ext.woff2') format('woff2');
+    font-weight: 100 1000; font-style: normal; font-display: swap;
+    unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: 'DM Sans', sans-serif; font-size: 11px; line-height: 1.5; color: #1a1a2e; background: #ffffff; }
+  .page { width: 100%; max-width: 794px; margin: 0 auto; padding: 2px 0; }
+  .header { margin-bottom: 20px; }
+  .header h1 { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; color: #1a1a2e; letter-spacing: -0.02em; margin-bottom: 6px; line-height: 1.1; }
+  .header-gradient { height: 2px; background: linear-gradient(to right, hsl(187,74%,32%), hsl(270,70%,45%)); border-radius: 1px; margin-bottom: 10px; }
+  .contact-row { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 10.5px; line-height: 1.4; color: #555; }
+  .contact-row a { color: #555; text-decoration: none; }
+  .contact-row .separator { color: #ccc; }
+  .section { margin-bottom: 18px; }
+  .section-title { font-family: 'Space Grotesk', sans-serif; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: hsl(187,74%,32%); border-bottom: 1.5px solid #e2e2e2; padding-bottom: 4px; margin-bottom: 10px; }
+  .summary-text { font-size: 11px; line-height: 1.7; color: #2f2f2f; }
+  a { white-space: nowrap; }
+  .competencies-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .competency-tag { font-size: 10px; font-weight: 500; color: hsl(187,74%,28%); background: hsl(187,40%,95%); padding: 4px 10px; border-radius: 3px; border: 1px solid hsl(187,40%,88%); }
+  .job { margin-bottom: 14px; }
+  .job-header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 4px; }
+  .job-company { font-family: 'Space Grotesk', sans-serif; font-size: 12.5px; font-weight: 600; color: hsl(270,70%,45%); }
+  .job-period { font-size: 10.5px; color: #777; white-space: nowrap; }
+  .job-role { font-size: 11px; font-weight: 600; color: #333; margin-bottom: 6px; }
+  .job-location { font-size: 10px; color: #888; }
+  .job ul { padding-left: 18px; margin-top: 6px; }
+  .job li { font-size: 10.5px; line-height: 1.6; color: #333; margin-bottom: 4px; }
+  .project { margin-bottom: 12px; }
+  .project-title { font-family: 'Space Grotesk', sans-serif; font-size: 11.5px; font-weight: 600; color: hsl(270,70%,45%); }
+  .project-desc { font-size: 10.5px; color: #444; margin-top: 3px; line-height: 1.55; }
+  .edu-item { margin-bottom: 8px; }
+  .edu-header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .edu-title { font-weight: 600; font-size: 11px; color: #333; }
+  .edu-org { color: hsl(270,70%,45%); font-weight: 500; }
+  .edu-year { font-size: 10px; color: #777; white-space: nowrap; }
+  .edu-desc { font-size: 10px; color: #666; margin-top: 2px; line-height: 1.5; }
+  .skills-grid { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+  .skill-item { font-size: 10.5px; color: #444; }
+  .skill-category { font-weight: 600; color: #333; }
+  @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } .page { padding: 0; } }
+  .avoid-break, .job, .project, .edu-item { break-inside: avoid; page-break-inside: avoid; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header avoid-break">
+    <h1>Gabriel Souza</h1>
+    <div class="header-gradient"></div>
+    <div class="contact-row">
+      <span>gabrielmarliere2005@gmail.com</span>
+      <span class="separator">|</span>
+      <a href="https://linkedin.com/in/gabrielmsa">linkedin.com/in/gabrielmsa</a>
+      <span class="separator">|</span>
+      <a href="https://github.com/Gabrielmarlier3">github.com/Gabrielmarlier3</a>
+      <span class="separator">|</span>
+      <span>Belo Horizonte, MG, Brasil</span>
+    </div>
+  </div>
+
+  <div class="section avoid-break">
+    <div class="section-title">Resumo Profissional</div>
+    <div class="summary-text">
+      Desenvolvedor backend especializado em integracao HTTP de baixo nivel, reverse engineering de APIs proprietarias e sistemas anti-bot, atuando em TypeScript/Node.js e Go. Nos ultimos 18 meses, trabalhei no desenvolvimento de duas plataformas de aviacao em producao continua: robos de emissao automatizada de passagens aereas com milhas e uma plataforma de busca e agregacao de voos cobrindo mais de 20 companhias aereas.
+      <br><br>
+      Meu repertorio tecnico central envolve fazer sistemas externos responderem corretamente sem cliente oficial: TLS impersonation de navegadores reais para evasao de sistemas anti-bot (Akamai, Datadome), reproducao de fluxos OAuth de multiplos passos via HTTP cru, e manutencao de integridade em operacoes financeiras com custo direto em cada falha. Opero simultaneamente em TypeScript (NestJS, Node.js) e Go (NATS, goroutines, GORM).
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Competencias Centrais</div>
+    <div class="competencies-grid">
+      <span class="competency-tag">TypeScript / Node.js</span>
+      <span class="competency-tag">Go</span>
+      <span class="competency-tag">NestJS</span>
+      <span class="competency-tag">TLS Impersonation</span>
+      <span class="competency-tag">Fingerprinting HTTP/2</span>
+      <span class="competency-tag">Reverse Engineering de APIs</span>
+      <span class="competency-tag">NATS</span>
+      <span class="competency-tag">PostgreSQL / GORM</span>
+      <span class="competency-tag">Sequelize / MySQL</span>
+      <span class="competency-tag">Docker Multi-Stage</span>
+      <span class="competency-tag">GitLab CI</span>
+      <span class="competency-tag">Redis</span>
+      <span class="competency-tag">AWS (EC2, S3, ECS)</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Experiencia Profissional</div>
+
+    <div class="job">
+      <div class="job-header">
+        <span class="job-company">Devnology</span>
+        <span class="job-period">Out 2024 - presente</span>
+      </div>
+      <div class="job-role">Desenvolvedor Backend <span class="job-location">- Belo Horizonte, MG (remoto)</span></div>
+      <ul>
+        <li>Desenvolvimento de plataforma de busca e agregacao de voos em Go: worker pool baseado em NATS processando crawlers de 20+ companhias aereas simultaneamente (Azul, GOL, LATAM, TAP, American Airlines e outras), com TLS impersonation dinamico, rotacao de proxies e extracao de fingerprint diretamente do token Akamai Bot Manager</li>
+        <li>API de orquestracao em Go (Gorilla Mux, PostgreSQL/GORM, Redis, NATS) para distribuicao de buscas, normalizacao de resultados multi-companhia, conversao de cambio BRL/USD com bid/ask estruturado, deduplicacao de requisicoes concorrentes e caching</li>
+        <li>Robos de emissao automatizada de passagens aereas com milhas para Azul, LATAM e Smiles em producao continua por 18 meses, em 20 repositorios privados (TypeScript/Node.js)</li>
+        <li>Implementacao de TLS impersonation de navegadores reais (Chrome/Firefox) para evasao de sistemas anti-bot (Akamai, Datadome), com algoritmo UCB1 Multi-Armed Bandit para selecao dinamica de ordem de headers HTTP em producao</li>
+        <li>Reverse engineering de fluxos OAuth/auth0 complexos via HTTP cru - incluindo MFA de 11 passos com cookie jar in-memory e decodificacao de payloads obfuscados embutidos em HTML</li>
+        <li>Manutencao de biblioteca NPM interna com mais de 100 releases (v0.6 a v0.12), coordenando propagacao de mudancas de contrato para 4 consumidores simultaneos no mesmo dia, com cobertura de testes nos modulos criticos</li>
+        <li>Bootstrap de microsservico NestJS do zero (Sequelize + MySQL, JWT/Passport, @nestjs/schedule, docker-compose com healthcheck) para gestao de IPs de proxy e sessao de producao</li>
+        <li>Integracao com SDK de verificacao biometrica de terceiro sem documentacao oficial: analise de trafego, implementacao de cliente compativel do zero e validacao contra o servico original</li>
+        <li>Padroes defensivos em operacoes financeiras: idempotencia em pagamentos (504 como optimistic success com confirmacao via extrato), validacao pos-write cross-companhia, fallback defensivo em ambiguidade de gateway</li>
+      </ul>
+    </div>
+
+    <div class="job">
+      <div class="job-header">
+        <span class="job-company">Stake Together</span>
+        <span class="job-period">Jul 2023 - Jul 2024</span>
+      </div>
+      <div class="job-role">Desenvolvedor Backend <span class="job-location">- Belo Horizonte, MG (remoto)</span></div>
+      <ul>
+        <li>Desenvolvimento e manutencao de sistemas backend em TypeScript, NestJS e Sequelize em ambiente de produto financeiro descentralizado</li>
+        <li>Aprofundamento em blockchain e contratos inteligentes, compreendendo sua aplicacao em solucoes financeiras on-chain</li>
+        <li>Versionamento e gestao de projetos com GitHub em equipe; comunicacao tecnica em ingles de forma constante</li>
+      </ul>
+    </div>
+
+    <div class="job">
+      <div class="job-header">
+        <span class="job-company">Canal Problems - YouTube</span>
+        <span class="job-period">Jan 2023 - Mai 2023</span>
+      </div>
+      <div class="job-role">Roteirista e Produtor</div>
+      <ul>
+        <li>Criacao de roteiros para conteudo infantil no YouTube, com foco em narrativas que promovessem identificacao do publico com o conteudo, gerando engajamento e retencao</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Projetos</div>
+
+    <div class="project">
+      <div class="project-title">Plataforma de Agregacao de Voos (Go)</div>
+      <div class="project-desc">Sistema distribuido em Go para busca de voos em 20+ companhias aereas: worker pool via NATS, multiplas estrategias de TLS impersonation (bogdanfinn, curl-cffi), extracao dinamica de fingerprint Akamai, e API de orquestracao com PostgreSQL/GORM, Redis e request coalescing.</div>
+    </div>
+
+    <div class="project">
+      <div class="project-title">Biblioteca de Utilidades Interna NPM</div>
+      <div class="project-desc">Biblioteca compartilhada por todos os robos de emissao aerea. Mais de 100 releases em 18 meses, com fingerprinting TLS, feature flags, sistema de impersonate ponderado com feedback loop via API e 7 cenarios de teste unitario no modulo de milhas.</div>
+    </div>
+
+    <div class="project">
+      <div class="project-title">Integrador Biometrico</div>
+      <div class="project-desc">Integracao com SDK de verificacao biometrica facial de terceiro sem documentacao de protocolo interno. Investigacao estruturada com 44+ descobertas documentadas, implementacao de cliente compativel do zero e validacao de inferencia contra o servico original.</div>
+    </div>
+
+    <div class="project">
+      <div class="project-title">Microsservico de Gestao de Sessao</div>
+      <div class="project-desc">Servico NestJS 11 implementado do zero para gestao de IPs de proxy e fingerprint de sessao: Sequelize + MySQL, JWT/Passport, agendamento via @nestjs/schedule, docker-compose com healthcheck, decorator custom @IsCPF.</div>
+    </div>
+  </div>
+
+  <div class="section avoid-break">
+    <div class="section-title">Formacao</div>
+    <div class="edu-item">
+      <div class="edu-header">
+        <span class="edu-title">Bacharelado em Ciencia da Computacao - <span class="edu-org">Faculdade Newton Paiva</span></span>
+        <span class="edu-year">2023 - previsao 2027</span>
+      </div>
+      <div class="edu-desc">Belo Horizonte, MG, Brasil</div>
+    </div>
+  </div>
+
+  <div class="section avoid-break">
+    <div class="section-title">Habilidades</div>
+    <div class="skills-grid">
+      <div class="skill-item"><span class="skill-category">Linguagens:</span> TypeScript, Node.js, Go</div>
+      <div class="skill-item"><span class="skill-category">Frameworks:</span> NestJS, Gorilla Mux, Express</div>
+      <div class="skill-item"><span class="skill-category">Banco de dados:</span> PostgreSQL (GORM), MySQL (Sequelize), Redis</div>
+      <div class="skill-item"><span class="skill-category">Mensageria:</span> NATS</div>
+      <div class="skill-item"><span class="skill-category">HTTP / Integracao:</span> TLS impersonation, fingerprinting HTTP/2, cookie management, tough-cookie, reverse engineering de APIs</div>
+      <div class="skill-item"><span class="skill-category">Infra / DevOps:</span> Docker (multi-stage), GitLab CI, AWS (EC2, S3, ECS), PM2, Graylog, Prometheus</div>
+      <div class="skill-item"><span class="skill-category">Ferramentas:</span> Jest, Charles Proxy, @nestjs/schedule, Gmail API, uTLS</div>
+      <div class="skill-item"><span class="skill-category">Outros:</span> Blockchain (Ethereum / contratos inteligentes), ingles tecnico</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,1606 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gabriel Souza — Backend Developer · Web Scraping & Automation</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --accent-h: 155;
+    --accent: oklch(0.78 0.13 var(--accent-h));
+    --accent-dim: oklch(0.78 0.13 var(--accent-h) / 0.18);
+    --accent-line: oklch(0.78 0.13 var(--accent-h) / 0.35);
+
+    --bg: oklch(0.145 0.005 260);
+    --bg-2: oklch(0.175 0.006 260);
+    --panel: oklch(0.205 0.007 260);
+    --panel-hi: oklch(0.235 0.008 260);
+    --line: oklch(1 0 0 / 0.07);
+    --line-hi: oklch(1 0 0 / 0.14);
+
+    --fg: oklch(0.97 0 0);
+    --fg-2: oklch(0.82 0 0);
+    --fg-3: oklch(0.62 0 0);
+    --fg-4: oklch(0.46 0 0);
+
+    --sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+    --mono: 'Geist Mono', ui-monospace, monospace;
+    --serif: 'Instrument Serif', ui-serif, serif;
+
+    --density: 1;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  body { font-size: 15px; line-height: 1.55; font-weight: 400; letter-spacing: -0.005em; }
+
+  /* Grain + faint grid */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(to right, oklch(1 0 0 / 0.018) 1px, transparent 1px),
+      linear-gradient(to bottom, oklch(1 0 0 / 0.018) 1px, transparent 1px);
+    background-size: 64px 64px;
+    pointer-events: none; z-index: 1;
+    mask-image: radial-gradient(ellipse at 50% 30%, black 30%, transparent 80%);
+  }
+
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; }
+
+  .container { max-width: 1160px; margin: 0 auto; padding: 0 40px; position: relative; z-index: 2; }
+
+  /* ---------- NAV ---------- */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    background: oklch(0.145 0.005 260 / 0.72);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--mono); font-size: 13px; letter-spacing: -0.01em;
+  }
+  .brand-mark {
+    width: 22px; height: 22px; border-radius: 6px;
+    background: linear-gradient(135deg, var(--accent), oklch(0.55 0.14 var(--accent-h)));
+    position: relative;
+    box-shadow: 0 0 0 1px oklch(1 0 0 / 0.1), 0 6px 14px -4px var(--accent-dim);
+  }
+  .brand-mark::after {
+    content: ''; position: absolute; inset: 4px;
+    border-radius: 3px;
+    background: radial-gradient(circle at 30% 30%, oklch(1 0 0 / 0.5), transparent 55%);
+  }
+  .brand-name { color: var(--fg); font-weight: 500; }
+  .brand-sep { color: var(--fg-4); }
+  .brand-role { color: var(--fg-3); }
+
+  .nav-links {
+    display: flex; gap: 4px; align-items: center;
+    font-size: 13.5px; color: var(--fg-3);
+  }
+  .nav-links a {
+    padding: 6px 12px; border-radius: 6px;
+    transition: color 120ms, background 120ms;
+  }
+  .nav-links a:hover { color: var(--fg); background: var(--line); }
+  .nav-cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 7px 13px; border-radius: 7px;
+    background: var(--fg); color: var(--bg);
+    font-size: 13px; font-weight: 500;
+    transition: transform 120ms, background 120ms;
+  }
+  .nav-cta:hover { background: oklch(0.92 0 0); }
+
+  /* ---------- HERO ---------- */
+  .hero { padding: 96px 0 80px; position: relative; }
+  .hero-grid {
+    display: grid; grid-template-columns: 1.15fr 1fr; gap: 72px; align-items: start;
+  }
+
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--mono); font-size: 12px; color: var(--fg-3);
+    padding: 5px 10px 5px 8px; border: 1px solid var(--line); border-radius: 999px;
+    background: oklch(1 0 0 / 0.02);
+  }
+  .eyebrow .dot {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-dim);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 3px var(--accent-dim); }
+    50% { box-shadow: 0 0 0 6px oklch(0.78 0.13 var(--accent-h) / 0.08); }
+  }
+
+  h1.hero-title {
+    font-size: clamp(44px, 5.6vw, 76px);
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+    font-weight: 500;
+    margin: 22px 0 24px;
+    color: var(--fg);
+  }
+  h1.hero-title .serif { font-family: var(--serif); font-style: italic; font-weight: 400; color: var(--fg-2); letter-spacing: -0.01em; }
+  h1.hero-title .accent { color: var(--accent); }
+
+  .hero-sub {
+    font-size: 17px; line-height: 1.6; color: var(--fg-3); max-width: 520px;
+    margin: 0 0 36px;
+  }
+
+  .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 9px;
+    padding: 10px 16px; border-radius: 8px;
+    font-size: 13.5px; font-weight: 500;
+    transition: transform 120ms, background 120ms, border-color 120ms;
+    cursor: pointer; border: 1px solid transparent;
+  }
+  .btn-primary { background: var(--fg); color: var(--bg); }
+  .btn-primary:hover { background: oklch(0.92 0 0); }
+  .btn-ghost { background: oklch(1 0 0 / 0.03); border-color: var(--line-hi); color: var(--fg-2); }
+  .btn-ghost:hover { background: oklch(1 0 0 / 0.06); color: var(--fg); }
+  .btn svg { width: 14px; height: 14px; }
+
+  /* Hero side panel - "live status" terminal */
+  .status-card {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 0;
+    overflow: hidden;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--fg-3);
+    box-shadow: 0 20px 60px -30px oklch(0 0 0 / 0.5);
+  }
+  .status-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+    background: oklch(1 0 0 / 0.015);
+  }
+  .status-head .lights { display: flex; gap: 6px; }
+  .status-head .lights i { width: 9px; height: 9px; border-radius: 50%; background: var(--line-hi); display: block; }
+  .status-head .title { color: var(--fg-4); font-size: 11.5px; letter-spacing: 0.02em; }
+  .status-body { padding: 14px 16px 16px; }
+  .status-line { display: flex; justify-content: space-between; padding: 5px 0; }
+  .status-line + .status-line { border-top: 1px dashed var(--line); }
+  .status-line .k { color: var(--fg-4); }
+  .status-line .v { color: var(--fg-2); }
+  .status-line .v.live { color: var(--accent); display: inline-flex; align-items: center; gap: 6px; }
+  .status-line .v.live::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+
+  .status-metrics {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px;
+    background: var(--line);
+    margin-top: 14px; border-top: 1px solid var(--line);
+  }
+  .metric { background: var(--bg-2); padding: 14px 16px; }
+  .metric .num { font-family: var(--sans); font-size: 26px; font-weight: 500; color: var(--fg); letter-spacing: -0.02em; }
+  .metric .lbl { font-family: var(--mono); font-size: 10.5px; color: var(--fg-4); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+
+  /* spark visualization embedded in card */
+  .spark {
+    margin-top: 16px;
+    padding: 14px 16px 16px;
+    border-top: 1px solid var(--line);
+    background: oklch(1 0 0 / 0.01);
+  }
+  .spark .lbl { font-family: var(--mono); font-size: 10.5px; color: var(--fg-4); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; display: flex; justify-content: space-between; }
+  .spark svg { width: 100%; height: 52px; display: block; }
+
+  /* ---------- SECTION ---------- */
+  section { padding: 96px 0; position: relative; }
+  .section-head { margin-bottom: 56px; max-width: 720px; }
+  .section-eyebrow { font-family: var(--mono); font-size: 12px; color: var(--accent); letter-spacing: 0.02em; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+  .section-eyebrow::before { content: ''; width: 22px; height: 1px; background: var(--accent-line); }
+  .section-title {
+    font-size: clamp(32px, 3.6vw, 46px);
+    font-weight: 500; letter-spacing: -0.028em; line-height: 1.05;
+    margin: 0 0 18px;
+  }
+  .section-title .serif { font-family: var(--serif); font-style: italic; font-weight: 400; color: var(--fg-2); }
+  .section-sub { font-size: 16px; color: var(--fg-3); max-width: 580px; line-height: 1.6; margin: 0; }
+
+  .section-divider {
+    border: none; height: 1px; background: var(--line); margin: 0;
+    position: relative; overflow: visible;
+  }
+  .section-divider::before {
+    content: ''; position: absolute; left: 50%; top: -3px; width: 7px; height: 7px;
+    border-radius: 50%; background: var(--accent); transform: translateX(-50%);
+    box-shadow: 0 0 0 4px var(--bg), 0 0 0 5px var(--line);
+  }
+
+  /* ---------- TIMELINE ---------- */
+  .timeline-wrap {
+    display: grid; grid-template-columns: 360px 1fr; gap: 64px; align-items: start;
+    position: relative;
+  }
+  /* sticky left rail: progress + legend */
+  .tl-rail {
+    position: sticky; top: 100px;
+    padding: 0;
+  }
+  .tl-rail-inner {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px;
+  }
+  .tl-rail h4 {
+    font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--fg-4); margin: 0 0 14px; font-weight: 500;
+  }
+  .tl-phases { display: flex; flex-direction: column; gap: 2px; }
+  .tl-phase-mini {
+    display: flex; align-items: center; gap: 12px;
+    padding: 9px 10px; border-radius: 8px;
+    cursor: pointer;
+    transition: background 120ms;
+    border: 1px solid transparent;
+  }
+  .tl-phase-mini:hover { background: oklch(1 0 0 / 0.03); }
+  .tl-phase-mini.active { background: oklch(1 0 0 / 0.04); border-color: var(--line-hi); }
+  .tl-phase-mini .idx {
+    font-family: var(--mono); font-size: 11px; color: var(--fg-4);
+    width: 22px;
+  }
+  .tl-phase-mini .ttl {
+    font-size: 13.5px; color: var(--fg-2); font-weight: 500; flex: 1;
+  }
+  .tl-phase-mini.active .ttl { color: var(--fg); }
+  .tl-phase-mini .yr { font-family: var(--mono); font-size: 11px; color: var(--fg-4); }
+  .tl-phase-mini.current .idx::before {
+    content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent); margin-right: 6px; box-shadow: 0 0 8px var(--accent);
+  }
+
+  .tl-progress {
+    margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line);
+    display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; color: var(--fg-4);
+  }
+  .tl-progress .bar {
+    height: 2px; background: var(--line); border-radius: 2px;
+    margin-top: 10px; overflow: hidden; position: relative;
+    grid-column: 1 / -1;
+  }
+  .tl-progress-wrap { display: grid; grid-template-columns: 1fr 1fr; row-gap: 6px; column-gap: 8px; }
+  .tl-progress .bar span {
+    display: block; height: 100%; background: var(--accent);
+    width: calc(var(--progress, 80) * 1%);
+    transition: width 300ms ease;
+  }
+
+  /* right column: the actual timeline */
+  .tl-main { position: relative; padding-left: 28px; }
+  .tl-main::before {
+    content: ''; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 1px;
+    background: linear-gradient(to bottom,
+      var(--line) 0%,
+      var(--line) 80%,
+      transparent 100%
+    );
+  }
+  .tl-entry {
+    position: relative;
+    padding-bottom: 32px;
+  }
+  .tl-entry:last-child { padding-bottom: 0; }
+
+  .tl-node {
+    position: absolute; left: -28px; top: 6px;
+    width: 15px; height: 15px; border-radius: 50%;
+    background: var(--bg);
+    border: 1px solid var(--line-hi);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 2;
+  }
+  .tl-node::after {
+    content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--fg-3);
+  }
+  .tl-entry.current .tl-node { border-color: var(--accent); }
+  .tl-entry.current .tl-node::after { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+  .tl-entry.future .tl-node { border-style: dashed; border-color: var(--line-hi); }
+  .tl-entry.future .tl-node::after { background: transparent; }
+
+  .tl-card {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 22px 24px 4px;
+    transition: border-color 160ms, background 160ms, transform 160ms;
+  }
+  .tl-entry.current .tl-card {
+    border-color: oklch(0.78 0.13 var(--accent-h) / 0.4);
+    background: linear-gradient(180deg, oklch(0.78 0.13 var(--accent-h) / 0.04), var(--bg-2) 40%);
+  }
+  .tl-entry:hover .tl-card { border-color: var(--line-hi); }
+
+  .tl-head {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+    margin-bottom: 14px;
+  }
+  .tl-phase-tag {
+    font-family: var(--mono); font-size: 11px; color: var(--fg-4);
+    letter-spacing: 0.04em;
+  }
+  .tl-entry.current .tl-phase-tag { color: var(--accent); }
+  .tl-date {
+    font-family: var(--mono); font-size: 11px; color: var(--fg-4);
+    white-space: nowrap;
+  }
+  .tl-title {
+    font-size: 22px; font-weight: 500; letter-spacing: -0.018em; color: var(--fg);
+    margin: 0 0 8px;
+  }
+  .tl-body {
+    font-size: 14.5px; color: var(--fg-3); line-height: 1.62;
+    margin: 0 0 18px; max-width: 640px;
+  }
+
+  .tl-meta {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+    background: var(--line);
+    margin: 0 -24px;
+    border-top: 1px solid var(--line);
+  }
+  .tl-meta > div {
+    background: var(--bg-2);
+    padding: 16px 24px;
+  }
+  .tl-meta h5 {
+    font-family: var(--mono); font-size: 10.5px; color: var(--fg-4);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin: 0 0 10px; font-weight: 500;
+  }
+  .tl-stack { display: flex; flex-wrap: wrap; gap: 5px; }
+  .tl-chip {
+    font-family: var(--mono); font-size: 11px; color: var(--fg-2);
+    padding: 3px 8px; border-radius: 5px;
+    background: oklch(1 0 0 / 0.03); border: 1px solid var(--line);
+  }
+  .tl-entry.current .tl-chip.hot { color: var(--accent); border-color: var(--accent-line); background: var(--accent-dim); }
+
+  .tl-milestones { list-style: none; padding: 0; margin: 0; font-size: 13px; color: var(--fg-2); }
+  .tl-milestones li { padding: 3px 0 3px 16px; position: relative; line-height: 1.5; }
+  .tl-milestones li::before {
+    content: ''; position: absolute; left: 0; top: 9px; width: 7px; height: 1px; background: var(--fg-4);
+  }
+
+  /* git-graph style variant */
+  [data-tl-style="graph"] .tl-main { padding-left: 56px; }
+  [data-tl-style="graph"] .tl-main::before { left: 18px; }
+  [data-tl-style="graph"] .tl-node { left: -46px; }
+  [data-tl-style="graph"] .tl-entry::after {
+    content: ''; position: absolute; left: -39px; top: 13px;
+    width: 28px; height: 1px; background: var(--line-hi);
+  }
+  [data-tl-style="graph"] .tl-entry:nth-child(even)::after { background: var(--accent-line); }
+
+  /* constellation variant: entries staggered */
+  [data-tl-style="constellation"] .tl-entry:nth-child(even) { margin-left: 48px; }
+
+  /* ---------- COMPETENCIES ---------- */
+  .comp-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .comp-col { background: var(--bg-2); padding: 28px 28px 24px; }
+  .comp-col h4 {
+    font-family: var(--mono); font-size: 11px; color: var(--fg-4);
+    text-transform: uppercase; letter-spacing: 0.08em; margin: 0 0 20px; font-weight: 500;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .comp-col h4 span { color: var(--fg-3); }
+
+  .comp-list { display: flex; flex-direction: column; gap: 14px; }
+  .comp-row {
+    display: grid; grid-template-columns: 150px 1fr 44px; gap: 16px; align-items: center;
+  }
+  .comp-name { font-size: 13.5px; color: var(--fg); font-weight: 500; }
+  .comp-bar { height: 4px; background: var(--line); border-radius: 3px; overflow: hidden; position: relative; }
+  .comp-bar i {
+    position: absolute; inset: 0 auto 0 0; display: block;
+    background: var(--fg-2); border-radius: 3px;
+    transform-origin: left center;
+  }
+  .comp-row.hero .comp-bar i { background: var(--accent); box-shadow: 0 0 12px var(--accent-dim); }
+  .comp-pct { font-family: var(--mono); font-size: 11px; color: var(--fg-4); text-align: right; }
+
+  .comp-cloud {
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .comp-cloud .tag {
+    font-family: var(--mono); font-size: 12px; color: var(--fg-2);
+    padding: 6px 10px; border-radius: 7px;
+    background: oklch(1 0 0 / 0.02); border: 1px solid var(--line);
+    transition: all 140ms;
+  }
+  .comp-cloud .tag:hover { border-color: var(--line-hi); color: var(--fg); background: oklch(1 0 0 / 0.05); }
+  .comp-cloud .tag.sm { font-size: 11px; color: var(--fg-3); padding: 5px 9px; }
+  .comp-cloud .tag.accent { border-color: var(--accent-line); color: var(--accent); background: var(--accent-dim); }
+
+  /* ---------- PROJECTS ---------- */
+  .proj-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
+  }
+  .proj-card {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 24px 26px 22px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 160ms, transform 160ms;
+    cursor: pointer;
+  }
+  .proj-card:hover { border-color: var(--line-hi); }
+  .proj-card:hover .proj-arrow { transform: translate(2px, -2px); color: var(--fg); }
+  .proj-card.span-2 { grid-column: span 2; }
+
+  .proj-kicker {
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--mono); font-size: 11px; color: var(--fg-4);
+    letter-spacing: 0.04em; margin-bottom: 18px;
+  }
+  .proj-kicker .status {
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .proj-kicker .status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+  .proj-kicker .status.archived::before { background: var(--fg-4); box-shadow: none; }
+  .proj-title {
+    font-size: 20px; font-weight: 500; letter-spacing: -0.018em; margin: 0 0 8px; color: var(--fg);
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+  }
+  .proj-arrow { color: var(--fg-4); transition: transform 180ms, color 180ms; font-family: var(--mono); font-size: 16px; line-height: 1; }
+  .proj-desc {
+    font-size: 13.5px; color: var(--fg-3); line-height: 1.6; margin: 0 0 22px;
+  }
+  .proj-stats {
+    display: flex; gap: 24px;
+    padding-top: 16px; border-top: 1px solid var(--line);
+  }
+  .proj-stats div { display: flex; flex-direction: column; gap: 2px; }
+  .proj-stats .n { font-size: 18px; color: var(--fg); font-weight: 500; letter-spacing: -0.01em; }
+  .proj-stats .l { font-family: var(--mono); font-size: 10.5px; color: var(--fg-4); text-transform: uppercase; letter-spacing: 0.06em; }
+
+  /* ASCII/monospace visual placeholder for projects */
+  .proj-viz {
+    position: absolute; right: 16px; top: 14px;
+    font-family: var(--mono); font-size: 10px; color: var(--fg-4);
+    line-height: 1.3; opacity: 0.35;
+    white-space: pre;
+    pointer-events: none;
+  }
+
+  /* ---------- PHILOSOPHY ---------- */
+  .philo {
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    padding: 88px 0;
+    background:
+      radial-gradient(ellipse at 50% 0%, oklch(0.78 0.13 var(--accent-h) / 0.05), transparent 60%),
+      var(--bg);
+  }
+  .philo-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center;
+  }
+  .philo-quote {
+    font-size: clamp(26px, 2.6vw, 36px); line-height: 1.25; letter-spacing: -0.02em;
+    color: var(--fg); font-weight: 400; margin: 0;
+  }
+  .philo-quote .serif { font-family: var(--serif); font-style: italic; color: var(--fg-2); }
+  .philo-quote .accent { color: var(--accent); }
+
+  .principles { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .principle { background: var(--bg-2); padding: 20px 22px; }
+  .principle .num { font-family: var(--mono); font-size: 11px; color: var(--accent); margin-bottom: 8px; }
+  .principle h5 { font-size: 14px; font-weight: 500; color: var(--fg); margin: 0 0 6px; letter-spacing: -0.01em; }
+  .principle p { font-size: 12.5px; color: var(--fg-3); margin: 0; line-height: 1.55; }
+
+  /* ---------- CTA ---------- */
+  .cta {
+    padding: 120px 0 80px; text-align: center;
+  }
+  .cta h2 {
+    font-size: clamp(40px, 5vw, 64px); font-weight: 500; letter-spacing: -0.03em; line-height: 1.03;
+    margin: 0 0 22px;
+  }
+  .cta h2 .serif { font-family: var(--serif); font-style: italic; color: var(--fg-2); font-weight: 400; }
+  .cta p { font-size: 16px; color: var(--fg-3); max-width: 520px; margin: 0 auto 36px; line-height: 1.6; }
+  .cta-actions { display: inline-flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+
+  .cta-channels {
+    margin-top: 56px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+    background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+    max-width: 720px; margin-left: auto; margin-right: auto;
+  }
+  .channel { background: var(--bg-2); padding: 22px 20px; text-align: left; transition: background 160ms; cursor: pointer; }
+  .channel:hover { background: var(--panel); }
+  .channel .lbl { font-family: var(--mono); font-size: 10.5px; color: var(--fg-4); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+  .channel .val { font-size: 15px; color: var(--fg); font-weight: 500; letter-spacing: -0.01em; }
+  .channel .sub { font-family: var(--mono); font-size: 11px; color: var(--fg-3); margin-top: 4px; }
+
+  /* ---------- FOOTER ---------- */
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 32px 0 40px;
+    font-family: var(--mono); font-size: 11.5px; color: var(--fg-4);
+  }
+  .footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+  .footer-meta { display: flex; gap: 20px; align-items: center; }
+  .footer-meta .live { color: var(--accent); display: inline-flex; align-items: center; gap: 6px; }
+  .footer-meta .live::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+
+  /* ---------- TWEAKS PANEL ---------- */
+  .tweaks-panel {
+    position: fixed; right: 20px; bottom: 20px; z-index: 100;
+    width: 280px;
+    background: var(--bg-2);
+    border: 1px solid var(--line-hi);
+    border-radius: 14px;
+    box-shadow: 0 20px 60px -20px oklch(0 0 0 / 0.6);
+    padding: 14px 16px 16px;
+    font-family: var(--sans);
+    display: none;
+  }
+  .tweaks-panel.on { display: block; }
+  .tweaks-panel h6 { font-family: var(--mono); font-size: 11px; color: var(--fg-4); text-transform: uppercase; letter-spacing: 0.08em; margin: 0 0 10px; font-weight: 500; display: flex; justify-content: space-between; }
+  .tweaks-panel h6 .close { cursor: pointer; color: var(--fg-4); }
+  .tw-row { margin-bottom: 14px; }
+  .tw-row:last-child { margin-bottom: 0; }
+  .tw-row .tw-lbl { font-size: 11.5px; color: var(--fg-3); margin-bottom: 7px; display: flex; justify-content: space-between; font-family: var(--mono); }
+  .tw-opts { display: flex; gap: 4px; }
+  .tw-opts button {
+    flex: 1; padding: 6px 8px; background: oklch(1 0 0 / 0.02); border: 1px solid var(--line);
+    color: var(--fg-3); border-radius: 6px; font-size: 11.5px; cursor: pointer;
+    transition: all 120ms;
+  }
+  .tw-opts button:hover { color: var(--fg); border-color: var(--line-hi); }
+  .tw-opts button.on { background: oklch(1 0 0 / 0.07); color: var(--fg); border-color: var(--line-hi); }
+  .tw-hue { display: flex; gap: 6px; }
+  .tw-hue button { width: 22px; height: 22px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; padding: 0; }
+  .tw-hue button.on { border-color: var(--fg); }
+
+  /* Scroll reveal */
+  .reveal { opacity: 0; transform: translateY(16px); transition: opacity 700ms ease, transform 700ms ease; }
+  .reveal.in { opacity: 1; transform: none; }
+
+  @media (max-width: 960px) {
+    .container { padding: 0 24px; }
+    .hero-grid, .timeline-wrap, .philo-grid { grid-template-columns: 1fr; gap: 40px; }
+    .tl-rail { position: static; }
+    .proj-grid, .comp-grid, .principles, .cta-channels { grid-template-columns: 1fr; }
+    .proj-card.span-2 { grid-column: auto; }
+    .nav-links a:not(.nav-cta) { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<script>
+  // Editable defaults
+  window.__TWEAKS = /*EDITMODE-BEGIN*/{
+    "accentHue": 30,
+    "density": "loose",
+    "timelineStyle": "spine",
+    "language": "pt"
+  }/*EDITMODE-END*/;
+</script>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <a class="brand" href="#">
+      <span class="brand-mark"></span>
+      <span class="brand-name">Gabriel Souza</span>
+      <span class="brand-sep">/</span>
+      <span class="brand-role" data-i18n="role">Backend · Automation</span>
+    </a>
+    <div class="nav-links">
+      <a href="#evolution" data-i18n="nav.evolution">Evolução</a>
+      <a href="#stack" data-i18n="nav.stack">Stack</a>
+      <a href="#projects" data-i18n="nav.projects">Projetos</a>
+      <a href="#philosophy" data-i18n="nav.philosophy">Filosofia</a>
+      <a class="nav-cta" href="#contact" data-i18n="nav.cta">Contato →</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="container hero-grid">
+    <div>
+      <span class="eyebrow">
+        <span class="dot"></span>
+        <span data-i18n="hero.eyebrow">v1.5 · Disponível para novos projetos</span>
+      </span>
+      <h1 class="hero-title">
+        <span data-i18n="hero.title1">Backend developer</span><br>
+        <span class="serif" data-i18n="hero.title2">focado em</span>
+        <span data-i18n="hero.title3">web scraping,</span><br>
+        <span data-i18n="hero.title4">automação e</span>
+        <span class="accent" data-i18n="hero.title5">integrações complexas.</span>
+      </h1>
+      <p class="hero-sub" data-i18n="hero.sub">
+        Dois anos e meio em desenvolvimento backend, com foco nos últimos dezoito
+        meses em crawlers resilientes, sistemas anti-bot e automações que rodam
+        24/7 em produção. Este site é um changelog da minha evolução — cada fase,
+        cada stack, cada problema que definiram meu repertório.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#evolution">
+          <span data-i18n="hero.cta1">Ver evolução</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </a>
+        <a class="btn btn-ghost" href="#contact">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg>
+          <span data-i18n="hero.cta2">Entrar em contato</span>
+        </a>
+      </div>
+    </div>
+
+    <aside class="status-card reveal">
+      <div class="status-head">
+        <div class="lights"><i></i><i></i><i></i></div>
+        <div class="title">~/now.log</div>
+      </div>
+      <div class="status-body">
+        <div class="status-line"><span class="k">location</span><span class="v">Belo Horizonte, MG · UTC-3</span></div>
+        <div class="status-line"><span class="k">status</span><span class="v live" data-i18n="status.open">Aberto para contato</span></div>
+        <div class="status-line"><span class="k">focus</span><span class="v">TypeScript · NestJS · Scraping</span></div>
+        <div class="status-line"><span class="k">since</span><span class="v">2024-10 · v1.0</span></div>
+      </div>
+      <div class="status-metrics">
+        <div class="metric"><div class="num">2.5<span style="color:var(--fg-4);font-weight:400;">+</span></div><div class="lbl" data-i18n="metric.years">anos</div></div>
+        <div class="metric"><div class="num">20</div><div class="lbl" data-i18n="metric.ships">repositórios</div></div>
+        <div class="metric"><div class="num">20<span style="font-size:14px;color:var(--fg-3);">+</span></div><div class="lbl" data-i18n="metric.uptime">companhias</div></div>
+      </div>
+      <div class="spark">
+        <div class="lbl"><span data-i18n="spark.label">Atividade — intensidade / semana</span><span data-i18n="spark.range">últimos 18 meses</span></div>
+        <svg id="spark" viewBox="0 0 300 52" preserveAspectRatio="none"></svg>
+      </div>
+    </aside>
+  </div>
+</header>
+
+<!-- EVOLUTION -->
+<section id="evolution">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">01 — <span data-i18n="ev.eyebrow">Evolução técnica</span></div>
+      <h2 class="section-title">
+        <span data-i18n="ev.title1">Um changelog</span>
+        <span class="serif" data-i18n="ev.title2">de dezoito meses.</span>
+      </h2>
+      <p class="section-sub" data-i18n="ev.sub">
+        Cada fase marca uma mudança real no tipo de problema que passei a resolver —
+        dos primeiros crawlers à engenharia reversa de SDKs de segurança.
+      </p>
+    </div>
+
+    <div class="timeline-wrap" data-tl-style="spine" id="timeline">
+      <!-- LEFT RAIL -->
+      <aside class="tl-rail">
+        <div class="tl-rail-inner">
+          <h4><span data-i18n="rail.title">Fases</span> · 07</h4>
+          <div class="tl-phases" id="tl-phases">
+            <!-- populated by JS -->
+          </div>
+          <div class="tl-progress-wrap">
+            <div class="tl-progress" style="grid-column:1/-1;">
+              <span data-i18n="rail.prog">Progresso</span><span id="progress-num">80%</span>
+            </div>
+            <div class="bar"><span id="progress-bar" style="--progress:80;"></span></div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <div class="tl-main" id="tl-main">
+        <!-- entries populated by JS -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPETENCIES -->
+<section id="stack">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">02 — <span data-i18n="st.eyebrow">Stack & competências</span></div>
+      <h2 class="section-title">
+        <span data-i18n="st.title1">Ferramentas que uso</span>
+        <span class="serif" data-i18n="st.title2">todos os dias.</span>
+      </h2>
+      <p class="section-sub" data-i18n="st.sub">
+        Profundidade onde importa, pragmatismo no resto. Os níveis são autoavaliações
+        honestas baseadas em tempo em produção e variedade de casos.
+      </p>
+    </div>
+
+    <div class="comp-grid">
+      <div class="comp-col">
+        <h4><span data-i18n="st.core">Core — domínio profundo</span><span>01 / 02</span></h4>
+        <div class="comp-list">
+          <div class="comp-row hero"><span class="comp-name">TypeScript</span><div class="comp-bar"><i style="width:96%"></i></div><span class="comp-pct">96</span></div>
+          <div class="comp-row hero"><span class="comp-name">Node.js</span><div class="comp-bar"><i style="width:94%"></i></div><span class="comp-pct">94</span></div>
+          <div class="comp-row hero"><span class="comp-name">Web Scraping</span><div class="comp-bar"><i style="width:93%"></i></div><span class="comp-pct">93</span></div>
+          <div class="comp-row hero"><span class="comp-name">Automation / Bots</span><div class="comp-bar"><i style="width:92%"></i></div><span class="comp-pct">92</span></div>
+          <div class="comp-row"><span class="comp-name">HTTP / TLS Analysis</span><div class="comp-bar"><i style="width:88%"></i></div><span class="comp-pct">88</span></div>
+          <div class="comp-row"><span class="comp-name">NestJS</span><div class="comp-bar"><i style="width:84%"></i></div><span class="comp-pct">84</span></div>
+          <div class="comp-row"><span class="comp-name">Reverse Engineering</span><div class="comp-bar"><i style="width:82%"></i></div><span class="comp-pct">82</span></div>
+          <div class="comp-row"><span class="comp-name">Debugging crítico</span><div class="comp-bar"><i style="width:90%"></i></div><span class="comp-pct">90</span></div>
+        </div>
+      </div>
+
+      <div class="comp-col">
+        <h4><span data-i18n="st.plat">Plataforma & infra</span><span>02 / 02</span></h4>
+        <div class="comp-list" style="margin-bottom:26px;">
+          <div class="comp-row"><span class="comp-name">Docker / Compose</span><div class="comp-bar"><i style="width:86%"></i></div><span class="comp-pct">86</span></div>
+          <div class="comp-row"><span class="comp-name">CI/CD · GitLab CI</span><div class="comp-bar"><i style="width:82%"></i></div><span class="comp-pct">82</span></div>
+          <div class="comp-row"><span class="comp-name">AWS (EC2, S3, ECS)</span><div class="comp-bar"><i style="width:74%"></i></div><span class="comp-pct">74</span></div>
+          <div class="comp-row"><span class="comp-name">MySQL</span><div class="comp-bar"><i style="width:80%"></i></div><span class="comp-pct">80</span></div>
+          <div class="comp-row"><span class="comp-name">NPM Packages</span><div class="comp-bar"><i style="width:78%"></i></div><span class="comp-pct">78</span></div>
+        </div>
+
+        <h4 style="margin-top:8px;"><span data-i18n="st.orbit">Orbitando — uso frequente</span><span></span></h4>
+        <div class="comp-cloud">
+          <span class="tag accent">uTLS</span>
+          <span class="tag accent">tough-cookie</span>
+          <span class="tag accent">Charles Proxy</span>
+          <span class="tag">Sequelize</span>
+          <span class="tag">PM2</span>
+          <span class="tag">Passport / JWT</span>
+          <span class="tag">Jest</span>
+          <span class="tag">@nestjs/schedule</span>
+          <span class="tag sm">Go</span>
+          <span class="tag sm">Rust</span>
+          <span class="tag sm">Graylog</span>
+          <span class="tag sm">GitLab CI</span>
+          <span class="tag sm">ECS Auto Scaling</span>
+          <span class="tag sm">WASM</span>
+          <span class="tag sm">TLS fingerprint</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">03 — <span data-i18n="pr.eyebrow">Casos reais</span></div>
+      <h2 class="section-title">
+        <span data-i18n="pr.title1">Problemas resolvidos,</span>
+        <span class="serif" data-i18n="pr.title2">em produção.</span>
+      </h2>
+      <p class="section-sub" data-i18n="pr.sub">
+        Projetos selecionados que moldaram o meu repertório. Nomes de clientes
+        anonimizados por NDA — contexto completo sob solicitação.
+      </p>
+    </div>
+
+    <div class="proj-grid">
+      <article class="proj-card span-2">
+        <div class="proj-viz">┌──── flight-crawlers ──────┐
+│ ● ● ● plataformas: 3      │
+│   companhias aéreas: 20+   │
+│   uptime: 18 meses        │
+└───────────────────────────┘</div>
+        <div class="proj-kicker">
+          <span>CASE · out/2024 — presente</span>
+          <span class="status">em produção</span>
+        </div>
+        <h3 class="proj-title">
+          <span data-i18n="pr.c1.t">Crawlers multi-plataforma de preços de voo</span>
+          <span class="proj-arrow">↗</span>
+        </h3>
+        <p class="proj-desc" data-i18n="pr.c1.d">
+          Três crawlers independentes para companhias aéreas com sistemas anti-bot de
+          alta sofisticação. Reprodução de fluxos HTTP, impersonação de TLS (Go + Rust),
+          rotação de sessão com gestão de estado proprietária e algoritmo UCB1 para
+          otimização de headers. Operação contínua em produção há 18 meses.
+        </p>
+        <div class="proj-stats">
+          <div><span class="n">3</span><span class="l">plataformas</span></div>
+          <div><span class="n">20+</span><span class="l">companhias aéreas</span></div>
+          <div><span class="n">18 meses</span><span class="l" data-i18n="pr.c1.uptime">em produção</span></div>
+          <div><span class="n">TLS</span><span class="l">impersonation</span></div>
+        </div>
+      </article>
+
+      <article class="proj-card">
+        <div class="proj-kicker">
+          <span>CASE · 2025</span>
+          <span class="status">em produção</span>
+        </div>
+        <h3 class="proj-title">
+          <span data-i18n="pr.c2.t">Biblioteca utilitária interna para múltiplos serviços</span>
+          <span class="proj-arrow">↗</span>
+        </h3>
+        <p class="proj-desc" data-i18n="pr.c2.d">
+          Pacote NPM interno com utilitários compartilhados entre múltiplos serviços.
+          Ciclo de versionamento contínuo, 4 consumidores ativos e mais de 100 releases
+          publicados. Ponto central de convergência técnica entre serviços.
+        </p>
+        <div class="proj-stats">
+          <div><span class="n">100+</span><span class="l">releases</span></div>
+          <div><span class="n">4</span><span class="l">consumidores</span></div>
+        </div>
+      </article>
+
+      <article class="proj-card">
+        <div class="proj-kicker">
+          <span>CASE · 2025</span>
+          <span class="status">em produção</span>
+        </div>
+        <h3 class="proj-title">
+          <span data-i18n="pr.c3.t">Sistema de gestão de sessão por perfil</span>
+          <span class="proj-arrow">↗</span>
+        </h3>
+        <p class="proj-desc" data-i18n="pr.c3.d">
+          Camada de gestão de estado para crawlers com múltiplos perfis de identidade,
+          rotação automática e recuperação de falhas. Evoluído da v1 para v2
+          com estratégias de fingerprinting progressivamente mais sofisticadas.
+        </p>
+        <div class="proj-stats">
+          <div><span class="n">v2</span><span class="l">versão atual</span></div>
+          <div><span class="n">multi</span><span class="l">estratégias</span></div>
+        </div>
+      </article>
+
+      <article class="proj-card">
+        <div class="proj-kicker">
+          <span>CASE · 2025</span>
+          <span class="status">entregue</span>
+        </div>
+        <h3 class="proj-title">
+          <span data-i18n="pr.c4.t">Engenharia reversa de SDK de verificação</span>
+          <span class="proj-arrow">↗</span>
+        </h3>
+        <p class="proj-desc" data-i18n="pr.c4.d">
+          Análise de SDK de identidade sem documentação: desofuscação de JavaScript em
+          múltiplas camadas, decompilação de módulo WASM para C,
+          reimplementação manual de 5 algoritmos criptográficos proprietários.
+        </p>
+        <div class="proj-stats">
+          <div><span class="n">5</span><span class="l">algoritmos crypto</span></div>
+          <div><span class="n">WASM</span><span class="l">→ C decompilado</span></div>
+        </div>
+      </article>
+
+      <article class="proj-card">
+        <div class="proj-kicker">
+          <span>CASE · 2025</span>
+          <span class="status">em produção</span>
+        </div>
+        <h3 class="proj-title">
+          <span data-i18n="pr.c5.t">Cliente HTTP/TLS com impersonação de perfil</span>
+          <span class="proj-arrow">↗</span>
+        </h3>
+        <p class="proj-desc" data-i18n="pr.c5.d">
+          Cliente Go que consome biblioteca Rust proprietária para impersonação de perfil
+          TLS de browsers reais. Contorna inspeção profunda de pacotes e sistemas
+          anti-bot baseados em fingerprint de handshake TLS/JA3.
+        </p>
+        <div class="proj-stats">
+          <div><span class="n">Go</span><span class="l">+ Rust</span></div>
+          <div><span class="n">JA3</span><span class="l">fingerprint</span></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- PHILOSOPHY -->
+<section id="philosophy" class="philo">
+  <div class="container philo-grid">
+    <div>
+      <div class="section-eyebrow">04 — <span data-i18n="ph.eyebrow">Filosofia</span></div>
+      <blockquote class="philo-quote">
+        <span data-i18n="ph.q1">Código bom é</span>
+        <span class="serif" data-i18n="ph.q2">previsível.</span><br>
+        <span data-i18n="ph.q3">Sistema bom é</span>
+        <span class="accent" data-i18n="ph.q4">observável.</span><br>
+        <span data-i18n="ph.q5">Engenheiro bom é</span>
+        <span class="serif" data-i18n="ph.q6">paciente.</span>
+      </blockquote>
+    </div>
+
+    <div class="principles">
+      <div class="principle">
+        <div class="num">P.01</div>
+        <h5 data-i18n="ph.p1.t">Pragmatismo antes de elegância</h5>
+        <p data-i18n="ph.p1.d">Resolver o problema do cliente primeiro. Refatorar depois, com contexto.</p>
+      </div>
+      <div class="principle">
+        <div class="num">P.02</div>
+        <h5 data-i18n="ph.p2.t">Profundidade em poucas coisas</h5>
+        <p data-i18n="ph.p2.d">Um ou dois domínios realmente dominados valem mais que dez superficiais.</p>
+      </div>
+      <div class="principle">
+        <div class="num">P.03</div>
+        <h5 data-i18n="ph.p3.t">Robustez por padrão</h5>
+        <p data-i18n="ph.p3.d">Retries, timeouts e circuit breakers não são opcionais em produção.</p>
+      </div>
+      <div class="principle">
+        <div class="num">P.04</div>
+        <h5 data-i18n="ph.p4.t">Clareza é respeito</h5>
+        <p data-i18n="ph.p4.d">Código, commits e PRs são mensagens para quem virá depois — incluindo eu mesmo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="contact" class="cta">
+  <div class="container">
+    <div class="section-eyebrow" style="justify-content:center;display:inline-flex;">05 — <span data-i18n="ct.eyebrow">Próxima fase</span></div>
+    <h2>
+      <span data-i18n="ct.t1">Vamos construir</span>
+      <span class="serif" data-i18n="ct.t2">algo difícil,</span><br>
+      <span data-i18n="ct.t3">juntos?</span>
+    </h2>
+    <p data-i18n="ct.sub">
+      Contratos pontuais, consultoria em scraping/automação ou discussões técnicas —
+      estou lendo a caixa de entrada.
+    </p>
+    <div class="cta-actions">
+      <a href="mailto:gabrielmarliere2005@gmail.com" class="btn btn-primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg>
+        gabrielmarliere2005@gmail.com
+      </a>
+      <a id="cv-btn" href="career-ops/output/gabriel-souza-cv-pt.pdf" download class="btn btn-ghost">
+        <span data-i18n="ct.cv">Baixar CV (PDF)</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13m0 0 4-4m-4 4-4-4M5 21h14"/></svg>
+      </a>
+    </div>
+
+    <div class="cta-channels">
+      <a class="channel" href="https://github.com/Gabrielmarlier3" target="_blank" rel="noopener">
+        <div class="lbl">GITHUB</div>
+        <div class="val">Gabrielmarlier3</div>
+        <div class="sub">20 repos privados · 18 meses</div>
+      </a>
+      <a class="channel" href="https://www.linkedin.com/in/gabrielmsa" target="_blank" rel="noopener">
+        <div class="lbl">LINKEDIN</div>
+        <div class="val">/in/gabrielmsa</div>
+        <div class="sub" data-i18n="ch.li">Aberto a mensagens</div>
+      </a>
+      <a class="channel" href="mailto:gabrielmarliere2005@gmail.com" class="channel">
+        <div class="lbl">EMAIL</div>
+        <div class="val">gabrielmarliere2005</div>
+        <div class="sub">@gmail.com</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-inner">
+    <div>© 2026 — Gabriel Souza · <span data-i18n="f.built">Construído em HTML, sem frameworks.</span></div>
+    <div class="footer-meta">
+      <span class="live" data-i18n="f.live">sistema online</span>
+      <span data-i18n="f.ver">v1.5 — Abr 2026</span>
+    </div>
+  </div>
+</footer>
+
+<!-- TWEAKS PANEL -->
+<aside class="tweaks-panel" id="tweaks">
+  <h6><span>Tweaks</span><span class="close" id="tweaks-close">×</span></h6>
+
+  <div class="tw-row">
+    <div class="tw-lbl"><span>accent</span><span id="hue-val">155°</span></div>
+    <div class="tw-hue" id="hue-picker">
+      <button data-hue="155" style="background: oklch(0.78 0.13 155)"></button>
+      <button data-hue="220" style="background: oklch(0.78 0.13 220)"></button>
+      <button data-hue="265" style="background: oklch(0.78 0.13 265)"></button>
+      <button data-hue="30"  style="background: oklch(0.78 0.13 30)"></button>
+      <button data-hue="0"   style="background: oklch(0.78 0.13 0)"></button>
+      <button data-hue="85"  style="background: oklch(0.78 0.13 85)"></button>
+    </div>
+  </div>
+
+  <div class="tw-row">
+    <div class="tw-lbl"><span>timeline</span></div>
+    <div class="tw-opts" id="tl-style">
+      <button data-style="spine">spine</button>
+      <button data-style="graph">graph</button>
+      <button data-style="constellation">stagger</button>
+    </div>
+  </div>
+
+  <div class="tw-row">
+    <div class="tw-lbl"><span>density</span></div>
+    <div class="tw-opts" id="density">
+      <button data-d="compact">compact</button>
+      <button data-d="regular">regular</button>
+      <button data-d="loose">loose</button>
+    </div>
+  </div>
+
+  <div class="tw-row">
+    <div class="tw-lbl"><span>language</span></div>
+    <div class="tw-opts" id="lang">
+      <button data-l="pt">PT</button>
+      <button data-l="en">EN</button>
+    </div>
+  </div>
+</aside>
+
+<script>
+// ============ DATA ============
+const PHASES = [
+  {
+    id: 'p1',
+    phase: 'v1.0 — Entrada',
+    phaseEn: 'v1.0 — Entry',
+    year: '2024',
+    date: '2024 · 10',
+    title: 'Primeiros crawlers de voo em produção',
+    titleEn: 'First flight crawlers in production',
+    body: 'Entrada com foco imediato em scraping de companhias aéreas. Reprodução de fluxos HTTP, gestão de cookies e headers, análise de sessão com Charles Proxy. Aprender a diferença entre "funciona no navegador" e "funciona headless por 30 dias".',
+    bodyEn: 'Joined with immediate focus on airline scraping. Reproducing HTTP flows, cookie and header management, session analysis with Charles Proxy. Learning the difference between "works in a browser" and "works headlessly for 30 days".',
+    stack: ['TypeScript', 'Node.js', 'uTLS', 'MySQL'],
+    hot: ['TypeScript', 'Node.js'],
+    milestones: [
+      'Três crawlers de companhias aéreas funcionando',
+      'Análise de fluxo HTTP com Charles Proxy',
+      'Primeiros pipelines de CI/CD no GitLab'
+    ],
+    milestonesEn: [
+      'Three airline crawlers working',
+      'HTTP flow analysis with Charles Proxy',
+      'First CI/CD pipelines on GitLab'
+    ]
+  },
+  {
+    id: 'p2',
+    phase: 'v2.0 — Multi-plataforma',
+    phaseEn: 'v2.0 — Multi-platform',
+    year: '2025',
+    date: '2025 · 01',
+    title: 'Escala, resiliência e anti-fingerprint',
+    titleEn: 'Scale, resilience and anti-fingerprint',
+    body: 'Volume crescente exigiu estratégias sérias de retry, backoff e rotação de sessão. Primeiras soluções anti-fingerprint: User-Agent, headers e cookies coordenados. A distinção entre uptime de lab e uptime de produção começa a importar.',
+    bodyEn: 'Growing volume demanded serious retry, backoff and session rotation strategies. First anti-fingerprint solutions: coordinated User-Agent, headers and cookies. The difference between lab uptime and production uptime starts to matter.',
+    stack: ['TypeScript', 'NestJS', 'Docker', 'GitLab CI'],
+    hot: ['NestJS'],
+    milestones: [
+      'Cobertura de 3 plataformas de emissão em produção contínua',
+      'Estratégias de retry com backoff e estado persistido',
+      'Deploy automatizado com Docker + GitLab CI'
+    ],
+    milestonesEn: [
+      'Coverage of 3 ticketing platforms in continuous production',
+      'Retry with backoff and persistent state',
+      'Automated deploy with Docker + GitLab CI'
+    ]
+  },
+  {
+    id: 'p3',
+    phase: 'v3.0 — Infraestrutura',
+    phaseEn: 'v3.0 — Infrastructure',
+    year: '2025',
+    date: '2025 · 03',
+    title: 'NestJS, AWS e biblioteca interna',
+    titleEn: 'NestJS, AWS and internal library',
+    body: 'Desenvolvimento de microsserviços com NestJS do zero: JWT/Passport, @Cron, Sequelize. Infraestrutura em AWS (EC2, S3, ECS com Auto Scaling). Criação e publicação de biblioteca utilitária interna em NPM — adotada por 4 serviços.',
+    bodyEn: 'Microservice development with NestJS from scratch: JWT/Passport, @Cron, Sequelize. AWS infrastructure (EC2, S3, ECS with Auto Scaling). Creation and publication of internal NPM utility library — adopted by 4 services.',
+    stack: ['NestJS', 'AWS ECS', 'Sequelize', 'NPM'],
+    hot: ['AWS ECS', 'NestJS'],
+    milestones: [
+      'Microsserviços com JWT, @Cron e Sequelize',
+      'Biblioteca utilitária NPM interna em uso por 4 serviços',
+      'ECS Auto Scaling provisionado e monitorado via Grafana'
+    ],
+    milestonesEn: [
+      'Microservices with JWT, @Cron and Sequelize',
+      'Internal NPM utility library in use by 4 services',
+      'ECS Auto Scaling provisioned and monitored via Grafana'
+    ]
+  },
+  {
+    id: 'p4',
+    phase: 'v4.0 — Sessão & TLS',
+    phaseEn: 'v4.0 — Session & TLS',
+    year: '2025',
+    date: '2025 · 06',
+    title: 'Session manager, impersonação de TLS e UCB1',
+    titleEn: 'Session manager, TLS impersonation and UCB1',
+    body: 'Anti-bot de alta sofisticação exigiu solução própria de gestão de sessão. Impersonação de perfil TLS via cliente Go consumindo biblioteca Rust proprietária. Algoritmo UCB1 (Multi-Armed Bandit) para otimização autônoma de headers.',
+    bodyEn: 'High-sophistication anti-bot required a custom session management solution. TLS profile impersonation via Go client consuming proprietary Rust library. UCB1 (Multi-Armed Bandit) algorithm for autonomous header optimization.',
+    stack: ['TypeScript', 'Go', 'Rust'],
+    hot: ['Go', 'Rust'],
+    milestones: [
+      'Solução própria de gestão de sessão v1 → v2',
+      'Cliente TLS em Go + biblioteca Rust proprietária',
+      'UCB1 para ordenação autônoma de headers'
+    ],
+    milestonesEn: [
+      'Custom session management solution v1 → v2',
+      'Go TLS client + proprietary Rust library',
+      'UCB1 for autonomous header ordering'
+    ]
+  },
+  {
+    id: 'p5',
+    phase: 'v5.0 — Engenharia Reversa',
+    phaseEn: 'v5.0 — Reverse Engineering',
+    year: '2026',
+    date: '2026 · 04',
+    title: 'Deofuscação de SDK e módulo WASM',
+    titleEn: 'SDK deobfuscation and WASM module',
+    body: 'Análise profunda de SDK de verificação de identidade sem documentação: desofuscação manual de JavaScript em múltiplas camadas, decompilação de módulo WASM para C, reimplementação de 5 algoritmos criptográficos proprietários.',
+    bodyEn: 'Deep analysis of undocumented identity verification SDK: manual JavaScript deobfuscation in multiple layers, WASM module decompilation to C, reimplementation of 5 proprietary cryptographic algorithms.',
+    stack: ['JavaScript', 'WASM', 'Node.js'],
+    hot: ['WASM'],
+    current: true,
+    milestones: [
+      'Desofuscação manual de JS protegido (múltiplas camadas)',
+      'Decompilação de módulo WASM → C',
+      '5 algoritmos criptográficos proprietários reimplementados'
+    ],
+    milestonesEn: [
+      'Manual deobfuscation of protected JS (multiple layers)',
+      'WASM module decompilation → C',
+      '5 proprietary cryptographic algorithms reimplemented'
+    ]
+  },
+  {
+    id: 'pN',
+    phase: 'next',
+    phaseEn: 'next',
+    year: '→',
+    date: '→',
+    title: 'Próximos passos',
+    titleEn: 'Next steps',
+    body: 'Interesse em problemas de coleta e integração de dados em escala, engenharia de plataforma para automação ou consultoria técnica em sistemas anti-bot. O critério é complexidade técnica real com impacto mensurável.',
+    bodyEn: 'Interest in large-scale data collection and integration, automation platform engineering or technical consulting on anti-bot systems. The bar is real technical complexity with measurable impact.',
+    stack: ['?', '?', '?'],
+    hot: [],
+    future: true,
+    milestones: [
+      'Escala: volume muito maior, infra mais robusta',
+      'Plataforma: produto onde automação é o core',
+      'Problemas técnicos que ninguém quer resolver'
+    ],
+    milestonesEn: [
+      'Scale: much higher volume, more robust infra',
+      'Platform: product where automation is core',
+      'Technical problems nobody wants to solve'
+    ]
+  }
+];
+
+// ============ I18N ============
+const I18N = {
+  en: {
+    'role': 'Backend · Automation',
+    'nav.evolution': 'Evolution',
+    'nav.stack': 'Stack',
+    'nav.projects': 'Projects',
+    'nav.philosophy': 'Philosophy',
+    'nav.cta': 'Contact →',
+    'hero.eyebrow': 'v1.5 · Open to new projects',
+    'hero.title1': 'Backend developer',
+    'hero.title2': 'focused on',
+    'hero.title3': 'web scraping,',
+    'hero.title4': 'automation and',
+    'hero.title5': 'complex integrations.',
+    'hero.sub': 'Two and a half years in backend development, with the last eighteen months focused on resilient crawlers, anti-bot systems and automations running 24/7 in production. This site is a changelog of my evolution — each phase, each stack, each problem that shaped my repertoire.',
+    'hero.cta1': 'See the evolution',
+    'hero.cta2': 'Get in touch',
+    'status.open': 'Open for contracts',
+    'metric.years': 'years',
+    'metric.ships': 'repos',
+    'metric.uptime': 'airlines',
+    'spark.label': 'Activity — intensity/week',
+    'spark.range': 'last 18 months',
+    'ev.eyebrow': 'Technical evolution',
+    'ev.title1': 'A changelog',
+    'ev.title2': 'of eighteen months.',
+    'ev.sub': 'Each phase marks a real shift in the kind of problem I started solving — from the first crawlers to reverse-engineering security SDKs.',
+    'rail.title': 'Phases',
+    'rail.prog': 'Progress',
+    'st.eyebrow': 'Stack & skills',
+    'st.title1': 'Tools I use',
+    'st.title2': 'every day.',
+    'st.sub': 'Depth where it matters, pragmatism on the rest. The levels are honest self-assessments based on time in production and case variety.',
+    'st.core': 'Core — deep mastery',
+    'st.plat': 'Platform & infra',
+    'st.orbit': 'Orbit — frequent use',
+    'pr.eyebrow': 'Real cases',
+    'pr.title1': 'Problems solved,',
+    'pr.title2': 'in production.',
+    'pr.sub': 'Selected projects that shaped my repertoire. Client names redacted under NDA — full context on request.',
+    'pr.c1.t': 'Multi-platform flight price crawlers',
+    'pr.c1.d': 'Three independent crawlers for airlines with high-sophistication anti-bot systems. HTTP flow reproduction, TLS impersonation (Go + Rust), proprietary session state management and UCB1 algorithm for header optimization. Continuous production operation for 18 months.',
+    'pr.c1.uptime': 'in production',
+    'pr.c2.t': 'Internal utility library for multiple services',
+    'pr.c2.d': 'Internal NPM package with shared utilities across multiple services. Continuous versioning cycle, 4 active consumers and 100+ published releases. Central technical convergence point across services.',
+    'pr.c3.t': 'Profile-based session management system',
+    'pr.c3.d': 'Session state layer for crawlers with multiple identity profiles, automatic rotation and failure recovery. Evolved from v1 to v2 with progressively more sophisticated fingerprinting strategies.',
+    'pr.c3.uptime': 'current version',
+    'pr.c4.t': 'Reverse engineering of verification SDK',
+    'pr.c4.d': 'Analysis of identity SDK with no documentation: manual JavaScript deobfuscation across multiple layers, WASM module decompilation to C, manual reimplementation of 5 proprietary cryptographic algorithms.',
+    'pr.c5.t': 'HTTP/TLS client with profile impersonation',
+    'pr.c5.d': 'Go client consuming proprietary Rust library for real-browser TLS profile impersonation. Bypasses deep packet inspection and anti-bot systems based on TLS/JA3 handshake fingerprinting.',
+    'ph.eyebrow': 'Philosophy',
+    'ph.q1': 'Good code is',
+    'ph.q2': 'predictable.',
+    'ph.q3': 'Good systems are',
+    'ph.q4': 'observable.',
+    'ph.q5': 'Good engineers are',
+    'ph.q6': 'patient.',
+    'ph.p1.t': 'Pragmatism before elegance',
+    'ph.p1.d': 'Solve the customer\'s problem first. Refactor later, with context.',
+    'ph.p2.t': 'Depth in a few things',
+    'ph.p2.d': 'One or two domains genuinely mastered beat ten superficial ones.',
+    'ph.p3.t': 'Robustness by default',
+    'ph.p3.d': 'Retries, timeouts and circuit breakers aren\'t optional in production.',
+    'ph.p4.t': 'Clarity is respect',
+    'ph.p4.d': 'Code, commits and PRs are messages for who comes next — including me.',
+    'ct.eyebrow': 'Next phase',
+    'ct.t1': 'Let\'s build',
+    'ct.t2': 'something hard,',
+    'ct.t3': 'together?',
+    'ct.sub': 'Selected contracts, scraping/automation consulting or technical discussions — the inbox is open.',
+    'ct.cv': 'Download CV (PDF)',
+    'ch.li': 'Open to messages',
+    'ch.cal': '30min · technical call',
+    'f.built': 'Built in HTML, no frameworks.',
+    'f.live': 'system online',
+    'f.ver': 'v1.5 — Apr 2026',
+    'tl.stack': 'DOMINANT STACK',
+    'tl.miles': 'MILESTONES'
+  },
+  pt: {
+    'tl.stack': 'STACK DOMINANTE',
+    'tl.miles': 'MARCOS'
+  }
+};
+
+// ============ RENDER TIMELINE ============
+const tlMain = document.getElementById('tl-main');
+const tlPhases = document.getElementById('tl-phases');
+
+function renderTimeline(lang) {
+  tlMain.innerHTML = '';
+  tlPhases.innerHTML = '';
+
+  PHASES.forEach((p, i) => {
+    // rail mini
+    const mini = document.createElement('div');
+    mini.className = 'tl-phase-mini' + (p.current ? ' current' : '');
+    mini.dataset.target = p.id;
+    mini.innerHTML = `
+      <span class="idx">${String(i+1).padStart(2,'0')}</span>
+      <span class="ttl">${lang === 'en' ? p.phaseEn : p.phase}</span>
+      <span class="yr">${p.year}</span>
+    `;
+    mini.addEventListener('click', () => {
+      document.getElementById(p.id).scrollIntoView({ block: 'start' });
+    });
+    tlPhases.appendChild(mini);
+
+    // main entry
+    const entry = document.createElement('article');
+    entry.className = 'tl-entry reveal' + (p.current ? ' current' : '') + (p.future ? ' future' : '');
+    entry.id = p.id;
+    const title = lang === 'en' ? p.titleEn : p.title;
+    const body = lang === 'en' ? p.bodyEn : p.body;
+    const phaseLbl = lang === 'en' ? p.phaseEn : p.phase;
+    const miles = (lang === 'en' ? p.milestonesEn : p.milestones) || [];
+    const stackLbl = lang === 'en' ? 'DOMINANT STACK' : 'STACK DOMINANTE';
+    const milesLbl = lang === 'en' ? 'MILESTONES' : 'MARCOS';
+
+    entry.innerHTML = `
+      <div class="tl-node"></div>
+      <div class="tl-card">
+        <div class="tl-head">
+          <span class="tl-phase-tag">${phaseLbl}</span>
+          <span class="tl-date">${p.date}</span>
+        </div>
+        <h3 class="tl-title">${title}</h3>
+        <p class="tl-body">${body}</p>
+        <div class="tl-meta">
+          <div>
+            <h5>${stackLbl}</h5>
+            <div class="tl-stack">
+              ${p.stack.map(s => `<span class="tl-chip${p.hot && p.hot.includes(s) ? ' hot' : ''}">${s}</span>`).join('')}
+            </div>
+          </div>
+          <div>
+            <h5>${milesLbl}</h5>
+            <ul class="tl-milestones">
+              ${miles.map(m => `<li>${m}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+      </div>
+    `;
+    tlMain.appendChild(entry);
+  });
+}
+
+// ============ SCROLL SYNC RAIL ============
+function setupScrollSync() {
+  const entries = [...document.querySelectorAll('.tl-entry')];
+  const minis = [...document.querySelectorAll('.tl-phase-mini')];
+  const progressBar = document.getElementById('progress-bar');
+  const progressNum = document.getElementById('progress-num');
+
+  const io = new IntersectionObserver((items) => {
+    items.forEach(it => {
+      if (it.isIntersecting) {
+        const id = it.target.id;
+        minis.forEach(m => m.classList.toggle('active', m.dataset.target === id));
+        const idx = PHASES.findIndex(p => p.id === id);
+        const pct = Math.round(((idx + 1) / PHASES.length) * 100);
+        if (progressBar) progressBar.style.setProperty('--progress', pct);
+        if (progressNum) progressNum.textContent = pct + '%';
+      }
+    });
+  }, { rootMargin: '-40% 0px -50% 0px' });
+
+  entries.forEach(e => io.observe(e));
+}
+
+// ============ REVEAL ON SCROLL ============
+function setupReveal() {
+  const revealables = document.querySelectorAll('.reveal, .tl-entry, .proj-card, .comp-col, .principle, .channel');
+  revealables.forEach(el => el.classList.add('reveal'));
+  // Immediately reveal any element already in viewport
+  const vh = window.innerHeight;
+  revealables.forEach(el => {
+    const r = el.getBoundingClientRect();
+    if (r.top < vh && r.bottom > 0) {
+      el.classList.add('in');
+    }
+  });
+  const io = new IntersectionObserver((items) => {
+    items.forEach(it => {
+      if (it.isIntersecting) {
+        it.target.classList.add('in');
+        io.unobserve(it.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  revealables.forEach(el => {
+    if (!el.classList.contains('in')) io.observe(el);
+  });
+}
+
+// ============ SPARK ============
+function drawSpark() {
+  const svg = document.getElementById('spark');
+  if (!svg) return;
+  // real weekly commit intensity — derived from manifest.json monthly distribution
+  // max = Feb/2025 (~60 commits/week), normalized to 0–1
+  const pts = [
+    // out/2024
+    0.036, 0.041,
+    // nov/2024
+    0.031, 0.035, 0.029, 0.038,
+    // dez/2024
+    0.034, 0.033, 0.039, 0.041,
+    // jan/2025
+    0.282, 0.310, 0.268, 0.285,
+    // fev/2025 — pico máximo
+    0.920, 1.000, 0.985, 0.945,
+    // mar/2025
+    0.735, 0.752, 0.715, 0.742,
+    // abr/2025
+    0.398, 0.422, 0.378, 0.397,
+    // mai/2025
+    0.588, 0.612, 0.568, 0.602,
+    // jun/2025
+    0.520, 0.542, 0.498, 0.532,
+    // jul/2025
+    0.762, 0.792, 0.738, 0.762,
+    // ago/2025
+    0.562, 0.582, 0.542, 0.572,
+    // set/2025
+    0.545, 0.562, 0.528, 0.552,
+    // out/2025
+    0.408, 0.428, 0.388, 0.415,
+    // nov/2025
+    0.362, 0.382, 0.342, 0.368,
+    // dez/2025
+    0.180, 0.196, 0.162, 0.188,
+    // jan/2026
+    0.220, 0.242, 0.202, 0.222,
+    // fev/2026
+    0.165, 0.178, 0.152, 0.172,
+    // mar/2026 — segundo pico
+    0.772, 0.802, 0.758, 0.762,
+    // abr/2026
+    0.468, 0.458
+  ];
+  const n = pts.length;
+  const W = 300, H = 52;
+  const path = pts.map((p, i) => {
+    const x = (i / (n - 1)) * W;
+    const y = H - p * H;
+    return (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1);
+  }).join(' ');
+  const area = path + ` L${W},${H} L0,${H} Z`;
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <path d="${area}" fill="url(#sg)"/>
+    <path d="${path}" stroke="var(--accent)" stroke-width="1.3" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+    ${pts.map((p, i) => {
+      if (i !== n-1) return '';
+      const x = (i / (n - 1)) * W;
+      const y = H - p * H;
+      return `<circle cx="${x}" cy="${y}" r="3" fill="var(--accent)"/><circle cx="${x}" cy="${y}" r="7" fill="var(--accent)" opacity="0.25"/>`;
+    }).join('')}
+  `;
+}
+
+// ============ I18N APPLY ============
+function applyLang(lang) {
+  const dict = I18N[lang] || {};
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (dict[key] !== undefined) el.textContent = dict[key];
+    else if (lang === 'pt') {
+      // already rendered in PT by default — skip
+    }
+  });
+  // Save original PT if needed
+}
+
+// Store original PT strings on first call
+const PT_BACKUP = {};
+function captureOriginalPT() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    PT_BACKUP[el.dataset.i18n] = el.textContent;
+  });
+}
+function restorePT() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const k = el.dataset.i18n;
+    if (PT_BACKUP[k] !== undefined) el.textContent = PT_BACKUP[k];
+  });
+}
+
+// ============ TWEAKS ============
+const T = window.__TWEAKS || {};
+function setAccent(h) {
+  document.documentElement.style.setProperty('--accent-h', h);
+  document.documentElement.style.setProperty('--accent', `oklch(0.78 0.13 ${h})`);
+  document.documentElement.style.setProperty('--accent-dim', `oklch(0.78 0.13 ${h} / 0.18)`);
+  document.documentElement.style.setProperty('--accent-line', `oklch(0.78 0.13 ${h} / 0.35)`);
+  const val = document.getElementById('hue-val');
+  if (val) val.textContent = h + '°';
+  document.querySelectorAll('#hue-picker button').forEach(b => b.classList.toggle('on', +b.dataset.hue === +h));
+  persist({ accentHue: +h });
+}
+function setTlStyle(s) {
+  document.getElementById('timeline').dataset.tlStyle = s;
+  document.querySelectorAll('#tl-style button').forEach(b => b.classList.toggle('on', b.dataset.style === s));
+  persist({ timelineStyle: s });
+}
+function setDensity(d) {
+  const root = document.documentElement;
+  if (d === 'compact') root.style.setProperty('--density', '0.85');
+  else if (d === 'loose') root.style.setProperty('--density', '1.15');
+  else root.style.setProperty('--density', '1');
+  // adjust section padding
+  const map = { compact: '64px', regular: '96px', loose: '128px' };
+  document.querySelectorAll('section').forEach(s => s.style.paddingTop = s.style.paddingBottom = map[d]);
+  document.querySelectorAll('#density button').forEach(b => b.classList.toggle('on', b.dataset.d === d));
+  persist({ density: d });
+}
+let currentLang = 'pt';
+function setLang(l) {
+  if (l === 'en') applyLang('en');
+  else restorePT();
+  currentLang = l;
+  const cvBtn = document.getElementById('cv-btn');
+  if (cvBtn) cvBtn.href = l === 'en'
+    ? 'career-ops/output/gabriel-souza-cv-en.pdf'
+    : 'career-ops/output/gabriel-souza-cv-pt.pdf';
+  renderTimeline(l);
+  setupScrollSync();
+  setupReveal();
+  document.querySelectorAll('#lang button').forEach(b => b.classList.toggle('on', b.dataset.l === l));
+  persist({ language: l });
+}
+function persist(edits) {
+  try { window.parent.postMessage({ type: '__edit_mode_set_keys', edits }, '*'); } catch(e){}
+}
+
+// ============ TWEAKS PANEL WIRING ============
+function wireTweaks() {
+  const panel = document.getElementById('tweaks');
+  document.getElementById('tweaks-close').addEventListener('click', () => {
+    panel.classList.remove('on');
+    try { window.parent.postMessage({ type: '__edit_mode_deactivated_by_child' }, '*'); } catch(e){}
+  });
+
+  document.querySelectorAll('#hue-picker button').forEach(b => {
+    b.addEventListener('click', () => setAccent(b.dataset.hue));
+  });
+  document.querySelectorAll('#tl-style button').forEach(b => {
+    b.addEventListener('click', () => setTlStyle(b.dataset.style));
+  });
+  document.querySelectorAll('#density button').forEach(b => {
+    b.addEventListener('click', () => setDensity(b.dataset.d));
+  });
+  document.querySelectorAll('#lang button').forEach(b => {
+    b.addEventListener('click', () => setLang(b.dataset.l));
+  });
+
+  // edit-mode protocol — register BEFORE announcing
+  window.addEventListener('message', (e) => {
+    const t = e.data && e.data.type;
+    if (t === '__activate_edit_mode') panel.classList.add('on');
+    else if (t === '__deactivate_edit_mode') panel.classList.remove('on');
+  });
+  try { window.parent.postMessage({ type: '__edit_mode_available' }, '*'); } catch(e){}
+}
+
+// ============ INIT ============
+document.addEventListener('DOMContentLoaded', () => {
+  captureOriginalPT();
+  renderTimeline('pt');
+  setupScrollSync();
+  setupReveal();
+  drawSpark();
+
+  // apply persisted tweaks
+  if (T.accentHue) setAccent(T.accentHue); else setAccent(155);
+  if (T.timelineStyle) setTlStyle(T.timelineStyle); else setTlStyle('spine');
+  if (T.density) setDensity(T.density); else setDensity('regular');
+  if (T.language && T.language !== 'pt') setLang(T.language);
+
+  wireTweaks();
+
+  // smooth anchor scroll
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      const href = a.getAttribute('href');
+      if (href.length > 1) {
+        const el = document.querySelector(href);
+        if (el) {
+          e.preventDefault();
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    });
+  });
+});
+
+</script>
+</body>
+</html>
