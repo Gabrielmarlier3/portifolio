@@ -104,8 +104,9 @@
     transition: transform 120ms, background 120ms;
   }
   .nav-cta:hover { background: oklch(0.92 0 0); }
-  .nav-lang { display: flex; align-items: center; gap: 1px; background: var(--line); border-radius: 6px; padding: 2px; }
-  .nav-lang-btn { padding: 3px 9px; border-radius: 4px; font-size: 12px; font-weight: 600; font-family: var(--mono); color: var(--fg-3); background: none; border: none; cursor: pointer; transition: all 120ms; letter-spacing: 0.04em; }
+  .nav-lang { display: flex; align-items: center; gap: 0; background: var(--line); border: 1px solid var(--line-hi); border-radius: 6px; padding: 2px; margin-right: 6px; }
+  .nav-lang-btn { padding: 3px 9px; border-radius: 4px; font-size: 12px; font-weight: 600; font-family: var(--mono); color: var(--fg-3); background: none; border: none; cursor: pointer; transition: all 120ms; letter-spacing: 0.04em; line-height: 1; }
+  .nav-lang-btn:hover { color: var(--fg); }
   .nav-lang-btn.active { background: var(--bg); color: var(--fg); box-shadow: 0 1px 3px oklch(0 0 0 / 0.12); }
 
   /* ---------- HERO ---------- */
@@ -1625,16 +1626,16 @@ document.addEventListener('DOMContentLoaded', () => {
   wireTweaks();
 
   // nav lang toggle
-  document.querySelectorAll('#nav-lang .nav-lang-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      setLang(btn.dataset.l);
-      document.querySelectorAll('#nav-lang .nav-lang-btn').forEach(b => b.classList.toggle('active', b === btn));
-      document.querySelectorAll('#lang button').forEach(b => b.classList.toggle('on', b.dataset.l === btn.dataset.l));
-    });
-  });
-  if (T.language && T.language !== 'pt') {
-    document.querySelectorAll('#nav-lang .nav-lang-btn').forEach(b => b.classList.toggle('active', b.dataset.l === T.language));
+  function syncNavLang(lang) {
+    document.querySelectorAll('#nav-lang .nav-lang-btn').forEach(b => b.classList.toggle('active', b.dataset.l === lang));
+    document.querySelectorAll('#lang button').forEach(b => b.classList.toggle('on', b.dataset.l === lang));
   }
+  document.getElementById('nav-lang').addEventListener('click', () => {
+    const next = currentLang === 'pt' ? 'en' : 'pt';
+    setLang(next);
+    syncNavLang(next);
+  });
+  if (T.language && T.language !== 'pt') syncNavLang(T.language);
 
   // cv dropdown
   const cvDrop = document.querySelector('.cv-dropdown');
