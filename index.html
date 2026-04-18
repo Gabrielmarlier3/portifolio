@@ -104,6 +104,9 @@
     transition: transform 120ms, background 120ms;
   }
   .nav-cta:hover { background: oklch(0.92 0 0); }
+  .nav-lang { display: flex; align-items: center; gap: 1px; background: var(--line); border-radius: 6px; padding: 2px; }
+  .nav-lang-btn { padding: 3px 9px; border-radius: 4px; font-size: 12px; font-weight: 600; font-family: var(--mono); color: var(--fg-3); background: none; border: none; cursor: pointer; transition: all 120ms; letter-spacing: 0.04em; }
+  .nav-lang-btn.active { background: var(--bg); color: var(--fg); box-shadow: 0 1px 3px oklch(0 0 0 / 0.12); }
 
   /* ---------- HERO ---------- */
   .hero { padding: 96px 0 80px; position: relative; }
@@ -616,6 +619,7 @@
     .proj-grid, .comp-grid, .principles, .cta-channels { grid-template-columns: 1fr; }
     .proj-card.span-2 { grid-column: auto; }
     .nav-links a:not(.nav-cta) { display: none; }
+    .nav-lang { display: flex; }
   }
 </style>
 </head>
@@ -644,6 +648,10 @@
       <a href="#stack" data-i18n="nav.stack">Stack</a>
       <a href="#projects" data-i18n="nav.projects">Projetos</a>
       <a href="#philosophy" data-i18n="nav.philosophy">Filosofia</a>
+      <div class="nav-lang" id="nav-lang">
+        <button class="nav-lang-btn active" data-l="pt">PT</button>
+        <button class="nav-lang-btn" data-l="en">EN</button>
+      </div>
       <a class="nav-cta" href="#contact" data-i18n="nav.cta">Contato →</a>
     </div>
   </div>
@@ -1615,6 +1623,18 @@ document.addEventListener('DOMContentLoaded', () => {
   if (T.language && T.language !== 'pt') setLang(T.language);
 
   wireTweaks();
+
+  // nav lang toggle
+  document.querySelectorAll('#nav-lang .nav-lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setLang(btn.dataset.l);
+      document.querySelectorAll('#nav-lang .nav-lang-btn').forEach(b => b.classList.toggle('active', b === btn));
+      document.querySelectorAll('#lang button').forEach(b => b.classList.toggle('on', b.dataset.l === btn.dataset.l));
+    });
+  });
+  if (T.language && T.language !== 'pt') {
+    document.querySelectorAll('#nav-lang .nav-lang-btn').forEach(b => b.classList.toggle('active', b.dataset.l === T.language));
+  }
 
   // cv dropdown
   const cvDrop = document.querySelector('.cv-dropdown');
