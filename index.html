@@ -157,6 +157,29 @@
   .btn-ghost:hover { background: oklch(1 0 0 / 0.06); color: var(--fg); }
   .btn svg { width: 14px; height: 14px; }
 
+  .cv-dropdown { position: relative; display: inline-flex; }
+  .cv-dropdown-trigger { gap: 7px; }
+  .cv-chevron { width: 12px !important; height: 12px !important; transition: transform 150ms; }
+  .cv-dropdown.open .cv-chevron { transform: rotate(180deg); }
+  .cv-dropdown-menu {
+    display: none; position: absolute; bottom: calc(100% + 6px); left: 0;
+    background: var(--bg); border: 1px solid var(--line-hi); border-radius: 8px;
+    padding: 4px; min-width: 160px; box-shadow: 0 8px 24px oklch(0 0 0 / 0.18);
+    z-index: 100;
+  }
+  .cv-dropdown.open .cv-dropdown-menu { display: block; }
+  .cv-dropdown-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px; border-radius: 5px; font-size: 13px;
+    color: var(--fg-2); text-decoration: none; transition: background 120ms, color 120ms;
+  }
+  .cv-dropdown-item:hover { background: var(--line); color: var(--fg); }
+  .cv-dropdown-item span {
+    font-size: 10px; font-weight: 700; font-family: var(--mono);
+    color: var(--accent); background: oklch(from var(--accent) l c h / 0.12);
+    padding: 2px 5px; border-radius: 3px; letter-spacing: 0.04em;
+  }
+
   /* Hero side panel - "live status" terminal */
   .status-card {
     background: var(--bg-2);
@@ -971,10 +994,21 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg>
         gabrielmarliere2005@gmail.com
       </a>
-      <a id="cv-btn" href="career-ops/output/gabriel-souza-cv-pt.pdf" download class="btn btn-ghost">
-        <span data-i18n="ct.cv">Baixar CV (PDF)</span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13m0 0 4-4m-4 4-4-4M5 21h14"/></svg>
-      </a>
+      <div class="cv-dropdown">
+        <button class="btn btn-ghost cv-dropdown-trigger" aria-haspopup="true" aria-expanded="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13m0 0 4-4m-4 4-4-4M5 21h14"/></svg>
+          <span data-i18n="ct.cv">Baixar CV (PDF)</span>
+          <svg class="cv-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="cv-dropdown-menu">
+          <a href="career-ops/output/gabriel-souza-cv-pt.pdf" download class="cv-dropdown-item">
+            <span>PT</span> Português
+          </a>
+          <a href="career-ops/output/gabriel-souza-cv-en.pdf" download class="cv-dropdown-item">
+            <span>EN</span> English
+          </a>
+        </div>
+      </div>
     </div>
 
     <div class="cta-channels">
@@ -1526,10 +1560,6 @@ function setLang(l) {
   if (l === 'en') applyLang('en');
   else restorePT();
   currentLang = l;
-  const cvBtn = document.getElementById('cv-btn');
-  if (cvBtn) cvBtn.href = l === 'en'
-    ? 'career-ops/output/gabriel-souza-cv-en.pdf'
-    : 'career-ops/output/gabriel-souza-cv-pt.pdf';
   renderTimeline(l);
   setupScrollSync();
   setupReveal();
@@ -1585,6 +1615,21 @@ document.addEventListener('DOMContentLoaded', () => {
   if (T.language && T.language !== 'pt') setLang(T.language);
 
   wireTweaks();
+
+  // cv dropdown
+  const cvDrop = document.querySelector('.cv-dropdown');
+  const cvTrigger = document.querySelector('.cv-dropdown-trigger');
+  if (cvDrop && cvTrigger) {
+    cvTrigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const open = cvDrop.classList.toggle('open');
+      cvTrigger.setAttribute('aria-expanded', open);
+    });
+    document.addEventListener('click', () => {
+      cvDrop.classList.remove('open');
+      cvTrigger.setAttribute('aria-expanded', false);
+    });
+  }
 
   // smooth anchor scroll
   document.querySelectorAll('a[href^="#"]').forEach(a => {
