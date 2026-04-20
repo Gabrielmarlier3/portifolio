@@ -544,6 +544,9 @@
   .principle h5 { font-size: 14px; font-weight: 500; color: var(--fg); margin: 0 0 6px; letter-spacing: -0.01em; }
   .principle p { font-size: 12.5px; color: var(--fg-3); margin: 0; line-height: 1.55; }
 
+  /* ---------- CERTIFICATIONS ---------- */
+  .cert-grid { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+
   /* ---------- CTA ---------- */
   .cta {
     padding: 120px 0 80px; text-align: center;
@@ -648,6 +651,7 @@
       <a href="#evolution" data-i18n="nav.evolution">Evolução</a>
       <a href="#stack" data-i18n="nav.stack">Stack</a>
       <a href="#projects" data-i18n="nav.projects">Projetos</a>
+      <a href="#certifications" data-i18n="nav.certifications">Certs</a>
       <a href="#philosophy" data-i18n="nav.philosophy">Filosofia</a>
       <div class="nav-lang" id="nav-lang">
         <button class="nav-lang-btn active" data-l="pt">PT</button>
@@ -945,11 +949,24 @@
   </div>
 </section>
 
+<!-- CERTIFICATIONS -->
+<section id="certifications">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">04 — <span data-i18n="cert.eyebrow">Certificações</span></div>
+    </div>
+    <div class="cert-grid">
+      <div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="199df8f6-acbe-4152-be3c-9a14acc23b0a" data-share-badge-host="https://www.credly.com"></div>
+    </div>
+  </div>
+</section>
+<script type="text/javascript" async src="https://cdn.credly.com/assets/utilities/embed.js"></script>
+
 <!-- PHILOSOPHY -->
 <section id="philosophy" class="philo">
   <div class="container philo-grid">
     <div>
-      <div class="section-eyebrow">04 — <span data-i18n="ph.eyebrow">Filosofia</span></div>
+      <div class="section-eyebrow">05 — <span data-i18n="ph.eyebrow">Filosofia</span></div>
       <blockquote class="philo-quote">
         <span data-i18n="ph.q1">Código bom é</span>
         <span class="serif" data-i18n="ph.q2">previsível.</span><br>
@@ -1245,7 +1262,10 @@ const I18N = {
     'nav.evolution': 'Evolution',
     'nav.stack': 'Stack',
     'nav.projects': 'Projects',
+    'nav.certifications': 'Certs',
     'nav.philosophy': 'Philosophy',
+    'cert.eyebrow': 'Certifications',
+    'cert.title': 'Credentials',
     'nav.cta': 'Contact →',
     'hero.eyebrow': 'v1.5 · Open to new projects',
     'hero.title1': 'Backend developer',
